@@ -21,8 +21,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Copier l'exécutable compilé
+# Copier l'exécutable compilé et pubspec.yaml (requis par Mineral au runtime)
 COPY --from=build /app/bin/bot /app/bot
+COPY --from=build /app/pubspec.yaml /app/pubspec.yaml
 
 # Variables d'environnement (à configurer dans Dokploy)
 ENV DART_ENV=production
