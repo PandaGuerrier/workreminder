@@ -2,7 +2,9 @@ FROM dart:stable AS build
 
 WORKDIR /app
 
-WORKDIR /app/workreminder
+# Copier les fichiers du projet
+COPY pubspec.yaml pubspec.lock ./
+COPY bin/ bin/
 
 # Installer les dépendances
 RUN dart pub get
@@ -20,7 +22,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 # Copier l'exécutable compilé
-COPY --from=build /app/exemples/workreminder/bin/bot /app/bot
+COPY --from=build /app/bin/bot /app/bot
 
 # Variables d'environnement (à configurer dans Dokploy)
 ENV DART_ENV=production
