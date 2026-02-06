@@ -1,9 +1,25 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:mineral/api.dart';
 import 'package:mineral/container.dart';
 import 'package:mineral/contracts.dart';
 import 'package:mineral_cache/providers/memory.dart';
+
+
+void sendReminder(String channelId) async {
+  try {
+    final datastore = ioc.resolve<DataStoreContract>();
+    final channel = await datastore.channel.get<ServerTextChannel>(channelId, true);
+    final builder = MessageBuilder()
+      ..addText("@everyone")
+      ..addContainer(builder: MessageBuilder()
+        ..addText('C\'est l\'heure de faire le CCNA ! 🕔')
+      );
+    await channel!.send(builder);
+    print('Rappel envoyé à 17h !');
+  } catch (e) {
+    print('Erreur envoi rappel: $e');
+  }
+}
 
 void main(_, port) async {
   print('Work Reminder Bot 🚀');
@@ -28,34 +44,20 @@ void main(_, port) async {
 
     client.logger.info('Will send reminders to channel: $channelId');
 
-    // Vérifier l'heure toutes les 30 secondes
+    sendReminder(channelId); // Send immediately on startup
+
     Timer.periodic(Duration(seconds: 30), (timer) async {
       final now = DateTime.now();
-
-      // Si 17h et pas encore envoyé aujourd'hui
-      //
       if (now.hour == 17 && now.minute == 0 && lastSentDay != now.day) {
         lastSentDay = now.day;
-
-        try {
-          final datastore = ioc.resolve<DataStoreContract>();
-          final channel = await datastore.channel.get<ServerTextChannel>(channelId, true);
-          final builder = MessageBuilder()
-          ..addText("@everyone")
-          ..addContainer(builder: MessageBuilder()
-            ..addText('C\'est l\'heure de faire le CCNA ! 🕔')
-          );
-          await channel!.send(builder);
-          client.logger.info('Rappel envoyé à 17h !');
-        } catch (e) {
-          client.logger.error('Erreur envoi rappel: $e');
-        }
+        sendReminder(channelId);
       }
     });
   });
 
   await client.init();
 }
+
 
 final class AppEnv implements DefineEnvironment {
   static final String channelId = 'CHANNEL_ID';
