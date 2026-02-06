@@ -3,7 +3,7 @@ FROM dart:stable AS build
 WORKDIR /app
 
 # Copier les fichiers du projet
-COPY pubspec.yaml pubspec.lock ./
+COPY pubspec.yaml ./
 COPY bin/ bin/
 
 # Installer les dépendances
