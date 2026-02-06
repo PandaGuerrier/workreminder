@@ -6,6 +6,7 @@ import 'package:mineral_cache/providers/memory.dart';
 
 
 void sendReminder(String channelId) async {
+  print('Envoi du rappel à 17h...');
   try {
     final datastore = ioc.resolve<DataStoreContract>();
     final channel = await datastore.channel.get<ServerTextChannel>(channelId, true);
@@ -37,7 +38,7 @@ void main(_, port) async {
     client.logger.info('Bot is ready as ${bot.username}!');
     final channelId = env.get<String>('CHANNEL_ID');
     print(channelId);
-    if (channelId == null || channelId.isEmpty) {
+    if (channelId.isEmpty) {
       client.logger.error('CHANNEL_ID is not set in environment variables!');
       return;
     }
